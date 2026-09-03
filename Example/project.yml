@@ -1,0 +1,99 @@
+# XcodeGen project spec for the Metrike Ads iOS Example app.
+#
+# NOT materialized in this task (Phase A -- no Swift toolchain/XcodeGen in
+# this environment, see task-14-brief.md's "Environment constraint"). Phase B
+# runs, on a Mac with Homebrew:
+#
+#   brew install xcodegen
+#   xcodegen generate
+#
+# from this directory, which reads this file and produces
+# MetrikeExample.xcodeproj -- a generated artifact, never committed (see
+# README.md and .gitignore in this directory).
+#
+# Schema: https://github.com/yonaskolb/XcodeGen/blob/master/Docs/ProjectSpec.md
+name: MetrikeExample
+
+options:
+  bundleIdPrefix: com.metrike.ads
+  deploymentTarget:
+    iOS: "14.0"
+  # Xcode's own default -- kept explicit so a fresh XcodeGen version can't
+  # silently drift the generated project's own format.
+  developmentLanguage: en
+
+# Local Swift Package dependency: the SDK itself, one directory up
+# (sdk/ios/Package.swift, product/target both named "MetrikeAds" -- see that
+# file). This is the ENTIRE point of this Example: it consumes the SDK the
+# exact same way a real host app would, via SwiftPM, never via a source copy
+# or a binary framework.
+packages:
+  MetrikeAds:
+    path: ../
+
+targets:
+  MetrikeExample:
+    type: application
+    platform: iOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources
+    # XcodeGen OWNS the file named by `info.path`: every `xcodegen generate`
+    # rewrites it from scratch, keeping only what `properties` below declares.
+    # Sources/Info.plist is committed, so leaving `properties` out silently
+    # reverted commit c65d727's launch-screen/orientation/URL-scheme fixes on
+    # every regeneration (the app came back up letterboxed in compatibility
+    # mode, and metriketest:// stopped being a registered scheme). Every key
+    # that file needs therefore lives HERE, not there.
+    info:
+      path: Sources/Info.plist
+      properties:
+        LSRequiresIPhoneOS: true
+        # Empty dict = "use the modern, storyboard-free launch screen".
+        # Without this key (or a launch storyboard) iOS runs the app in
+        # compatibility mode: letterboxed, rendered at a legacy screen size
+        # and scaled up, which makes the SDK's own views (a 320x50 banner
+        # especially) impossible to judge at their real size.
+        UILaunchScreen: {}
+        # Landscape is included on purpose: fullscreen VAST and the instream
+        # demo are the formats a publisher will rotate the device to watch.
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # The conversion demo's deep link. AppDelegate.application(_:open:
+        # options:) routes metriketest://open?mk_cid=... to
+        # Metrike.handleDeepLink; without this key iOS refuses to open the
+        # scheme at all.
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.metrike.ads.example.deeplink
+            CFBundleURLSchemes:
+              - metriketest
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.metrike.ads.example
+        PRODUCT_NAME: MetrikeExample
+        SWIFT_VERSION: "5.7"
+        TARGETED_DEVICE_FAMILY: "1,2" # iPhone + iPad
+        # No storyboard/xib at all -- AppDelegate builds the window
+        # programmatically (task-14 brief). Also no
+        # UIApplicationSceneManifest in Info.plist, so this stays on the
+        # pre-SceneDelegate app lifecycle -- the simplest shape for a
+        # single-window example app.
+        ENABLE_PREVIEWS: NO
+        CODE_SIGN_STYLE: Automatic
+        # Left blank on purpose: Phase B's dev sets their own team id (or
+        # picks "Automatically manage signing" with a free Apple ID) in
+        # Xcode's Signing & Capabilities tab after `xcodegen generate` --
+        # see README.md's "instalar em um iPhone" section. A hardcoded team
+        # id here would only be valid for whoever generated this file.
+        DEVELOPMENT_TEAM: ""
+    dependencies:
+      - package: MetrikeAds
+        product: MetrikeAds

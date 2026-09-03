@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<!-- Empty dict = "use the modern, storyboard-free launch screen". Without
+	     this key (or a launch storyboard) iOS runs the app in compatibility
+	     mode: letterboxed, rendered at a legacy screen size and scaled up,
+	     which is exactly how it came up on the first Simulator run and makes
+	     the SDK's own views (a 320x50 banner especially) impossible to judge
+	     at their real size. -->
+	<key>UILaunchScreen</key>
+	<dict/>
+	<!-- Landscape is included on purpose: fullscreen VAST and the instream
+	     demo are the formats a publisher will rotate the device to watch. -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- The conversion demo's deep link. AppDelegate.application(_:open:
+	     options:) already routes metriketest://open?mk_cid=... to
+	     Metrike.handleDeepLink and its doc comment claimed this key existed,
+	     but it did not: without it iOS refuses to open the scheme at all, so
+	     the "voltar do clique e converter" leg of the device checkpoint could
+	     never have fired outside the in-process button shortcut. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.metrike.ads.example.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>metriketest</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
