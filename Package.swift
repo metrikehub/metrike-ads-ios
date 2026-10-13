@@ -7,8 +7,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "MetrikeAds",
-            url: "https://cdx.metrike.com.br/sdk/ios/MetrikeAds-0.1.0.zip",
-            checksum: "ea37da3af5ab6d15a9b704bf3dd395e0259f68944f6244787c84dbd8142f9371"
+            url: "https://cdx.metrike.com.br/sdk/ios/MetrikeAds-0.1.1.zip",
+            checksum: "ab1ba0d4de6b5f547771bf4940b3e4398eed41b52ecbc96541a8ad94e0331f62"
         )
     ]
 )
